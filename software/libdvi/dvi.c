@@ -7,10 +7,6 @@
 #include "dvi_serialiser.h"
 #include "tmds_encode.h"
 
-// Adafruit PicoDVI fork requires a couple global items run-time configurable:
-uint8_t dvi_vertical_repeat = DVI_VERTICAL_REPEAT;
-bool    dvi_monochrome_tmds = DVI_MONOCHROME_TMDS;
-
 // Time-critical functions pulled into RAM but each in a unique section to
 // allow garbage collection
 #define __dvi_func(f) __not_in_flash_func(f)
@@ -41,19 +37,16 @@ void dvi_init(struct dvi_inst *inst, uint spinlock_tmds_queue, uint spinlock_col
 
 	dvi_setup_scanline_for_vblank(inst->timing, inst->dma_cfg, true, &inst->dma_list_vblank_sync);
 	dvi_setup_scanline_for_vblank(inst->timing, inst->dma_cfg, false, &inst->dma_list_vblank_nosync);
-#if defined(ARDUINO)
-	dvi_setup_scanline_for_active(inst->timing, inst->dma_cfg, (uint32_t*)SRAM_BASE, &inst->dma_list_active);
-#else
 	dvi_setup_scanline_for_active(inst->timing, inst->dma_cfg, (void*)SRAM_BASE, &inst->dma_list_active);
-#endif
 	dvi_setup_scanline_for_active(inst->timing, inst->dma_cfg, NULL, &inst->dma_list_error);
 
 	for (int i = 0; i < DVI_N_TMDS_BUFFERS; ++i) {
 		void *tmdsbuf;
-		if (dvi_monochrome_tmds)
-			tmdsbuf = malloc(inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD * sizeof(uint32_t));
-		else
-			tmdsbuf = malloc(3 * inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD * sizeof(uint32_t));
+#if DVI_MONOCHROME_TMDS
+		tmdsbuf = malloc(inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD * sizeof(uint32_t));
+#else
+		tmdsbuf = malloc(3 * inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD * sizeof(uint32_t));
+#endif
 		if (!tmdsbuf)
 			panic("TMDS buffer allocation failed");
 		queue_add_blocking_u32(&inst->q_tmds_free, &tmdsbuf);
@@ -191,7 +184,7 @@ static void __dvi_func(dvi_dma_irq_handler)(struct dvi_inst *inst) {
 	// Make sure all three channels have definitely loaded their last block
 	// (should be within a few cycles of one another)
 	for (int i = 0; i < N_TMDS_LANES; ++i) {
-		while (dma_debug_hw->ch[inst->dma_cfg[i].chan_data].tcr != inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD)
+		while (dma_debug_hw->ch[inst->dma_cfg[i].chan_data].dbg_tcr != inst->timing->h_active_pixels / DVI_SYMBOLS_PER_WORD)
 			tight_loop_contents();
 	}
 
@@ -208,7 +201,7 @@ static void __dvi_func(dvi_dma_irq_handler)(struct dvi_inst *inst) {
 		tmdsbuf = NULL;
 	}
 	else if (queue_try_peek_u32(&inst->q_tmds_valid, &tmdsbuf)) {
-		if (inst->timing_state.v_ctr % dvi_vertical_repeat == dvi_vertical_repeat - 1) {
+		if (inst->timing_state.v_ctr % DVI_VERTICAL_REPEAT == DVI_VERTICAL_REPEAT - 1) {
 			queue_remove_blocking_u32(&inst->q_tmds_valid, &tmdsbuf);
 			inst->tmds_buf_release_next = tmdsbuf;
 		}
@@ -216,7 +209,7 @@ static void __dvi_func(dvi_dma_irq_handler)(struct dvi_inst *inst) {
 	else {
 		// No valid scanline was ready (generates solid red scanline)
 		tmdsbuf = NULL;
-		if (inst->timing_state.v_ctr % dvi_vertical_repeat == dvi_vertical_repeat - 1)
+		if (inst->timing_state.v_ctr % DVI_VERTICAL_REPEAT == DVI_VERTICAL_REPEAT - 1)
 			++inst->late_scanline_ctr;
 	}
 
@@ -229,7 +222,7 @@ static void __dvi_func(dvi_dma_irq_handler)(struct dvi_inst *inst) {
 			else {
 				_dvi_load_dma_op(inst->dma_cfg, &inst->dma_list_error);
 			}
-			if (inst->scanline_callback && inst->timing_state.v_ctr % dvi_vertical_repeat == dvi_vertical_repeat - 1) {
+			if (inst->scanline_callback && inst->timing_state.v_ctr % DVI_VERTICAL_REPEAT == DVI_VERTICAL_REPEAT - 1) {
 				inst->scanline_callback();
 			}
 			break;

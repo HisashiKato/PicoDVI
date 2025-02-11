@@ -7,8 +7,6 @@
 //   achievable bit clock from 12 MHz crystal)
 // - Helper functions for generating DMA lists based on these timings
 
-extern bool dvi_monochrome_tmds; // In dvi.c
-
 // Pull into RAM but apply unique section suffix to allow linker GC
 #define __dvi_func(x) __not_in_flash_func(x)
 #define __dvi_const(x) __not_in_flash_func(x)
@@ -28,6 +26,24 @@ const struct dvi_timing __dvi_const(dvi_timing_640x480p_60hz) = {
 	.v_active_lines    = 480,
 
 	.bit_clk_khz       = 252000
+};
+
+// 720x480p 60 Hz -- Required by CEA for EDTV/HDTV displays. Convenient for
+// emulating NTSC machines with visible overscan and reasonable clk_sys (270 MHz).
+const struct dvi_timing __dvi_const(dvi_timing_720x480p_60hz) = {
+	.h_sync_polarity   = false,
+	.h_front_porch     = 16,
+	.h_sync_width      = 62,
+	.h_back_porch      = 60,
+	.h_active_pixels   = 720,
+
+	.v_sync_polarity   = false,
+	.v_front_porch     = 9,
+	.v_sync_width      = 6,
+	.v_back_porch      = 30,
+	.v_active_lines    = 480,
+
+	.bit_clk_khz       = 270000
 };
 
 // SVGA -- completely by-the-book but requires 400 MHz clk_sys
@@ -219,7 +235,7 @@ static uint32_t __attribute__((aligned(8))) __dvi_const(empty_scanline_tmds)[6] 
 void dvi_timing_state_init(struct dvi_timing_state *t) {
 	t->v_ctr = 0;
 	t->v_state = DVI_STATE_FRONT_PORCH;
-};
+}
 
 void __dvi_func(dvi_timing_state_advance)(const struct dvi_timing *t, struct dvi_timing_state *s) {
 		s->v_ctr++;
@@ -254,7 +270,7 @@ static void _set_data_cb(dma_cb_t *cb, const struct dvi_lane_dma_cfg *dma_cfg,
 	channel_config_set_chain_to(&cb->c, dma_cfg->chan_ctrl);
 	// Note we never send a null trigger, so IRQ_QUIET is an IRQ suppression flag
 	channel_config_set_irq_quiet(&cb->c, !irq_on_finish);
-};
+}
 
 void dvi_setup_scanline_for_vblank(const struct dvi_timing *t, const struct dvi_lane_dma_cfg dma_cfg[],
 		bool vsync_asserted, struct dvi_scanline_dma_list *l) {
@@ -314,7 +330,11 @@ void dvi_setup_scanline_for_active(const struct dvi_timing *t, const struct dvi_
 
 void __dvi_func(dvi_update_scanline_data_dma)(const struct dvi_timing *t, const uint32_t *tmdsbuf, struct dvi_scanline_dma_list *l) {
 	for (int i = 0; i < N_TMDS_LANES; ++i) {
-		const uint32_t *lane_tmdsbuf = dvi_monochrome_tmds ? tmdsbuf : tmdsbuf + i * t->h_active_pixels / DVI_SYMBOLS_PER_WORD;
+#if DVI_MONOCHROME_TMDS
+		const uint32_t *lane_tmdsbuf = tmdsbuf;
+#else
+		const uint32_t *lane_tmdsbuf = tmdsbuf + i * t->h_active_pixels / DVI_SYMBOLS_PER_WORD;
+#endif
 		if (i == TMDS_SYNC_LANE)
 			dvi_lane_from_list(l, i)[3].read_addr = lane_tmdsbuf;
 		else

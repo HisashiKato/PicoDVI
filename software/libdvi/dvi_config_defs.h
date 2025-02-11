@@ -51,8 +51,16 @@
 #define DVI_SYMBOLS_PER_WORD 2
 #endif
 
-#if DVI_SYMBOLS_PER_WORD != 1 && DVI_SYMBOLS_PER_WORD !=2
-#error "Unsupported value for DVI_SYMBOLS_PER_WORD"
+// Implement TMDS encode with hardware encoders in SIO, instead of
+// interpolators + LUTs. The processor still has to crank the encoder, but
+// it's much faster. This still works with PIO serialisers, which can appear
+// on any GPIO, unlike the HSTX which is limited to specific GPIOs.
+#ifndef DVI_USE_SIO_TMDS_ENCODER
+#if PICO_RP2040
+#define DVI_USE_SIO_TMDS_ENCODER 0
+#else
+#define DVI_USE_SIO_TMDS_ENCODER 1
+#endif
 #endif
 
 // ----------------------------------------------------------------------------
@@ -118,7 +126,7 @@
 // If 1, reverse the order of pixels within each byte. Order of bytes within
 // each word is still little-endian.
 #ifndef DVI_1BPP_BIT_REVERSE
-#define DVI_1BPP_BIT_REVERSE 1 // Adafruit_GFX GFXcanvas1 requires this 1
+#define DVI_1BPP_BIT_REVERSE 0
 #endif
 
 // ----------------------------------------------------------------------------

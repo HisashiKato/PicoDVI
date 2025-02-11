@@ -55,6 +55,18 @@
 #error "Unsupported value for DVI_SYMBOLS_PER_WORD"
 #endif
 
+// Implement TMDS encode with hardware encoders in SIO, instead of
+// interpolators + LUTs. The processor still has to crank the encoder, but
+// it's much faster. This still works with PIO serialisers, which can appear
+// on any GPIO, unlike the HSTX which is limited to specific GPIOs.
+#ifndef DVI_USE_SIO_TMDS_ENCODER
+#if PICO_RP2040
+#define DVI_USE_SIO_TMDS_ENCODER 0
+#else
+#define DVI_USE_SIO_TMDS_ENCODER 1
+#endif
+#endif
+
 // ----------------------------------------------------------------------------
 // Pixel component layout
 
