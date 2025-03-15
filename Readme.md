@@ -1,3 +1,23 @@
+This version is modified for my own use.
+
+This is a part of the log when compiling a sketch that uses "PicoDVI - Adafruit Fork for Arduino 1.3.0" in the Arduino IDE.
+
+![](_Img/picodvi_log.jpg)
+
+When compiling, Arduino IDE uses the files in the `src/libdvi` folder of this library.
+
+The following is written in the README of "PicoDVI - Adafruit Fork for Arduino IDE".
+
+>A full copy of software/libdvi is made in src (originally was soft-linked but Arduino Library Manager does not approve). If any updates are made in the original PicoDVI libdvi directory, copy them here!
+
+In the previous update, changes were made to the `software/libdvi` folder, but no changes were made to the `src/libdvi` folder.  
+In other words, the updated contents are not reflected when compiling with Arduino IDE.  
+So I copied the contents of the `software/libdvi` folder to the `src/libdvi` folder.
+
+I would like to send a pull request, but when I use this modified library on my Raspberry Pi Pico 2 (RP2350), I occasionally experience problems with the USB serial port in my environment. In addition, I have not yet figured out how to send a pull request. So I will not send one.
+
+(Translated into English using a translation site. Sorry if it's wrong.)
+
 PicoDVI - Adafruit Fork for Arduino IDE + Adafruit_GFX compatibility
 ====================================================================
 (Original Readme content follows later)
