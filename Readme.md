@@ -10,7 +10,7 @@ The following is written in the README of "PicoDVI - Adafruit Fork for Arduino I
 
 >A full copy of software/libdvi is made in src (originally was soft-linked but Arduino Library Manager does not approve). If any updates are made in the original PicoDVI libdvi directory, copy them here!
 
-In the previous update, changes were made to the `software/libdvi` folder, but no changes were made to the `src/libdvi` folder.  
+The 1.3.0 update of "PicoDVI - Adafruit fork for Arduino" made changes to the `software/libdvi` folder but not to the `src/libdvi` folder.  
 In other words, the updated contents are not reflected when compiling with Arduino IDE.  
 So I copied the contents of the `software/libdvi` folder to the `src/libdvi` folder.
 
