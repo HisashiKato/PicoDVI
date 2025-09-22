@@ -1,3 +1,5 @@
+# PicoDVI library for Arduino based on Adafruit's fork
+
 This fork is modified for my own use.
 
 This is a part of the log when compiling a sketch that uses "PicoDVI - Adafruit Fork for Arduino 1.3.0" in the Arduino IDE.
