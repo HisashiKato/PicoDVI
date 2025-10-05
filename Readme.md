@@ -17,19 +17,23 @@ The following is written in the README of "PicoDVI - Adafruit Fork for Arduino I
 >A full copy of software/libdvi is made in src (originally was soft-linked but Arduino Library Manager does not approve). If any updates are made in the original PicoDVI libdvi directory, copy them here!  
 （ざっくり要約すると Arduino IDE に制約があるから、元の `software/libdvi` フォルダの中身に変更があったら、それらを全部 `src/libdvi` にコピーしてね）  
 
- "PicoDVI - Adafruit fork for Arduino" の 1.3.0 では `software/libdvi` に変更が加えられたものの、 `src/libdvi` には変更がありませんでした。  
+ "PicoDVI - Adafruit fork for Arduino" の 1.3.0 では `software/libdvi` に変更が加えられたのですが、 `src/libdvi` には変更がありませんでした。  
 The 1.3.0 update of "PicoDVI - Adafruit fork for Arduino" made changes to the `software/libdvi` folder but not to the `src/libdvi` folder.  
 
-これはアップデートされた内容が Arduino IDE 使用時に反映されないことを意味します。  
+これはアップデートされた変更内容が Arduino IDE 使用時に反映されないことを意味します。  
 In other words, the updated contents are not reflected when compiling with Arduino IDE.  
 
-それなので、 `software/libdvi` フォルダ内の変更されたファイルを `src/libdvi` にコピーしました。  
+それなので、 `software/libdvi` フォルダ内の変更されたファイルを `src/libdvi` にコピーしました。   
 So I copied the contents of the `software/libdvi` folder to the `src/libdvi` folder.   
 
+これで変更された内容（RP2350 の SIO TMDS エンコーダの使用など）が動くようになっているはずです（動いてるよね？)。  
 他にもちょこちょこ自分なりの変更を加えています。  
 
 　  
-（愚痴：元の PicoDVI - Adafruit fork for Arduino の Issues に「これおかしくね？」と書いたけれど、向こうは「おっけー」と言ったきり何も動かずに Close した（無視された）ので、もーしらんですよ、勝手にさせていただく）  
+（愚痴：元の PicoDVI - Adafruit fork for Arduino の Issues に「これおかしくね？」と書いたけれど、  
+　向こうは「おっけー」と言ったきり何も動かずに Close した（無視された）ので、もーしらんです、  
+　こっちは好き勝手させていただきます。  
+　このフォーク内に致命的な間違いがあったら教えてください）  
 　  
 
 (Translated into English using a translation site. Sorry if it's wrong.)
