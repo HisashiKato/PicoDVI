@@ -1,20 +1,36 @@
 # PicoDVI library for Arduino based on Adafruit's fork
 
+自分で使う用にフォークしたものです。  
 This fork is modified for my own use.
 
+以下は、"PicoDVI - Adafruit Fork for Arduino 1.3.0" を Arduino IDE でコンパイルした時のログの一部です。  
 This is a part of the log when compiling a sketch that uses "PicoDVI - Adafruit Fork for Arduino 1.3.0" in the Arduino IDE.
 
 ![](_Img/picodvi_log.jpg)
 
+コンパイル時に Arduino IDE は、このライブラリの `src/libdvi` フォルダ内のファイルを使用しています。  
 When compiling, Arduino IDE uses the files in the `src/libdvi` folder of this library.
 
+以下は "PicoDVI - Adafruit Fork for Arduino IDE" のREADMEに書かれている注意書きです。  
 The following is written in the README of "PicoDVI - Adafruit Fork for Arduino IDE".
 
->A full copy of software/libdvi is made in src (originally was soft-linked but Arduino Library Manager does not approve). If any updates are made in the original PicoDVI libdvi directory, copy them here!
+>A full copy of software/libdvi is made in src (originally was soft-linked but Arduino Library Manager does not approve). If any updates are made in the original PicoDVI libdvi directory, copy them here!  
+（ざっくり要約すると Arduino IDE に制約があるから、元の `software/libdvi` フォルダの中身に変更があったら、それらを全部 `src/libdvi` にコピーしてね）  
 
+ "PicoDVI - Adafruit fork for Arduino" の 1.3.0 では `software/libdvi` に変更が加えられたものの、 `src/libdvi` には変更がありませんでした。  
 The 1.3.0 update of "PicoDVI - Adafruit fork for Arduino" made changes to the `software/libdvi` folder but not to the `src/libdvi` folder.  
+
+これはアップデートされた内容が Arduino IDE 使用時に反映されないことを意味します。  
 In other words, the updated contents are not reflected when compiling with Arduino IDE.  
-So I copied the contents of the `software/libdvi` folder to the `src/libdvi` folder.
+
+それなので、 `software/libdvi` フォルダ内の変更されたファイルを `src/libdvi` にコピーしました。  
+So I copied the contents of the `software/libdvi` folder to the `src/libdvi` folder.   
+
+他にもちょこちょこ自分なりの変更を加えています。  
+
+　  
+（愚痴：元の PicoDVI - Adafruit fork for Arduino の Issues に「これおかしくね？」と書いたけれど、向こうは「おっけー」と言ったきり何も動かずに Close した（無視された）ので、もーしらんですよ、勝手にさせていただく）  
+　  
 
 (Translated into English using a translation site. Sorry if it's wrong.)
 
